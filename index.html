@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Calculadora Salarial 2026</title>
-<meta name="theme-color" content="#0f1117">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Salário PT">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.svg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -391,6 +384,143 @@
   .calc-fab:active { transform: scale(0.92); }
 
   @media (min-width: 480px) { .calc-fab { display: none; } }
+  /* ── Histórico ── */
+  .hist-month-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .hist-month-card.has-data { border-color: rgba(79,142,247,0.3); }
+  .hist-month-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .hist-month-left { display: flex; align-items: center; gap: 10px; }
+  .hist-month-badge {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(79,142,247,0.12);
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .hist-month-name { font-size: 0.85rem; font-weight: 600; }
+  .hist-month-liquido {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--accent2);
+  }
+  .hist-month-liquido.empty { color: var(--text3); font-size: 0.75rem; }
+  .hist-detail {
+    padding: 0 16px 14px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+  .hist-detail.open { display: block; }
+  .hist-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .hist-field { display: flex; flex-direction: column; gap: 4px; }
+  .hist-field label {
+    font-size: 0.65rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .hist-field input {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 9px 10px;
+    outline: none;
+    width: 100%;
+    -moz-appearance: textfield;
+    transition: border-color 0.2s;
+  }
+  .hist-field input::-webkit-inner-spin-button,
+  .hist-field input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .hist-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.12); }
+  .hist-field input.liquido-input { border-color: rgba(52,216,155,0.3); color: var(--accent2); }
+  .hist-field input.liquido-input:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(52,216,155,0.12); }
+  .hist-field input.neg { border-color: rgba(247,95,95,0.25); color: var(--danger); }
+  .hist-save-btn {
+    width: 100%; margin-top: 10px;
+    background: rgba(79,142,247,0.15);
+    border: 1.5px solid rgba(79,142,247,0.3);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .hist-save-btn:active { background: var(--accent); color: #fff; }
+  .hist-auto-btn {
+    width: 100%; margin-top: 6px;
+    background: rgba(52,216,155,0.1);
+    border: 1.5px solid rgba(52,216,155,0.25);
+    border-radius: var(--radius-sm);
+    color: var(--accent2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .hist-auto-btn:active { background: var(--accent2); color: #000; }
+  /* mini chart */
+  .hist-chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 14px;
+    padding: 16px 18px;
+  }
+  .hist-chart-title { font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 14px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 80px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .bar-fill {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(180deg, var(--accent2), rgba(52,216,155,0.4));
+    min-height: 3px;
+    transition: height 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  .bar-fill.current { background: linear-gradient(180deg, var(--accent), rgba(79,142,247,0.4)); }
+  .bar-label { font-size: 0.55rem; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .bar-val { font-size: 0.55rem; color: var(--text2); font-family: 'DM Mono', monospace; }
+  .hist-summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px; margin-top: 14px;
+  }
+  .hist-sum-card {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+  }
+  .hist-sum-label { font-size: 0.62rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .hist-sum-val { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; }
+
 
   /* animations */
   @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
@@ -413,6 +543,7 @@
   <button class="tab active" onclick="switchTab('calc')">💶 Calculadora</button>
   <button class="tab" onclick="switchTab('banco')">🕐 Banco de Horas</button>
   <button class="tab" onclick="switchTab('tabela')">📊 Tabela IRS</button>
+  <button class="tab" onclick="switchTab('historico')">📅 Histórico</button>
 </div>
 
 <!-- ══ TAB: CALCULADORA ══ -->
@@ -656,6 +787,37 @@
 </div>
 </div>
 
+
+<!-- ══ TAB: HISTÓRICO ══ -->
+<div class="tab-panel" id="tab-historico">
+<div class="container">
+
+  <!-- Chart + summary -->
+  <div class="hist-chart-wrap">
+    <div class="hist-chart-title">📈 Evolução Anual — Salário Líquido</div>
+    <div class="bar-chart" id="hist-bar-chart"></div>
+    <div class="hist-summary-grid">
+      <div class="hist-sum-card">
+        <div class="hist-sum-label">Média Mensal</div>
+        <div class="hist-sum-val" id="hist-media" style="color:var(--accent2)">—</div>
+      </div>
+      <div class="hist-sum-card">
+        <div class="hist-sum-label">Total Recebido</div>
+        <div class="hist-sum-val" id="hist-total" style="color:var(--accent)">—</div>
+      </div>
+      <div class="hist-sum-card">
+        <div class="hist-sum-label">Meses Reg.</div>
+        <div class="hist-sum-val" id="hist-meses-reg" style="color:var(--text2)">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Month cards -->
+  <div id="hist-months-container"></div>
+
+</div>
+</div>
+
 <button class="calc-fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
@@ -871,20 +1033,203 @@ function buildIRSTable() {
   });
 }
 
+
+// ── HISTÓRICO ─────────────────────────────────────────────────────────────────
+const HIST_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const HIST_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+// Load from localStorage if available, else blank
+function histLoad() {
+  try {
+    const raw = localStorage.getItem('salario_hist_2026');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return HIST_MESES.map(() => ({ base:0, he:0, alim:0, ss:0, irs:0, liquido:0, saved:false }));
+}
+function histSave(data) {
+  try { localStorage.setItem('salario_hist_2026', JSON.stringify(data)); } catch(e) {}
+}
+
+let histData = histLoad();
+
+function buildHistMonths() {
+  const container = document.getElementById('hist-months-container');
+  container.innerHTML = '';
+  HIST_MESES.forEach((mes, i) => {
+    const d = histData[i];
+    const hasData = d.saved || d.liquido > 0;
+    const card = document.createElement('div');
+    card.className = 'hist-month-card' + (hasData ? ' has-data' : '');
+    card.id = 'hcard-' + i;
+    card.innerHTML = `
+      <div class="hist-month-header" onclick="toggleHistDetail(${i})">
+        <div class="hist-month-left">
+          <div class="hist-month-badge">${HIST_SHORT[i]}</div>
+          <div>
+            <div class="hist-month-name">${mes}</div>
+          </div>
+        </div>
+        <div class="hist-month-liquido ${hasData ? '' : 'empty'}" id="hcard-liq-${i}">
+          ${hasData ? fmtShort(d.liquido) : 'por preencher'}
+        </div>
+      </div>
+      <div class="hist-detail" id="hdetail-${i}">
+        <div class="hist-field-grid">
+          <div class="hist-field">
+            <label>Salário Base</label>
+            <input type="number" id="hf-base-${i}" value="${d.base||''}" placeholder="0,00" step="0.01" oninput="histRecalc(${i})">
+          </div>
+          <div class="hist-field">
+            <label>Horas Extra</label>
+            <input type="number" id="hf-he-${i}" value="${d.he||''}" placeholder="0,00" step="0.01" oninput="histRecalc(${i})">
+          </div>
+          <div class="hist-field">
+            <label>Sub. Alimentação</label>
+            <input type="number" id="hf-alim-${i}" value="${d.alim||''}" placeholder="0,00" step="0.01" oninput="histRecalc(${i})">
+          </div>
+          <div class="hist-field">
+            <label>Seg. Social (−)</label>
+            <input type="number" class="neg" id="hf-ss-${i}" value="${d.ss||''}" placeholder="0,00" step="0.01" oninput="histRecalc(${i})">
+          </div>
+          <div class="hist-field">
+            <label>IRS Retido (−)</label>
+            <input type="number" class="neg" id="hf-irs-${i}" value="${d.irs||''}" placeholder="0,00" step="0.01" oninput="histRecalc(${i})">
+          </div>
+          <div class="hist-field">
+            <label>💚 Líquido Final</label>
+            <input type="number" class="liquido-input" id="hf-liq-${i}" value="${d.liquido||''}" placeholder="0,00" step="0.01" oninput="histManualLiq(${i})">
+          </div>
+        </div>
+        <button class="hist-auto-btn" onclick="histFillFromCalc(${i})">⚡ Preencher com cálculo atual</button>
+        <button class="hist-save-btn" onclick="histSaveMonth(${i})">💾 Guardar ${mes}</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateHistChart();
+}
+
+function fmtShort(v) {
+  return v.toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+
+function toggleHistDetail(i) {
+  const detail = document.getElementById('hdetail-' + i);
+  detail.classList.toggle('open');
+}
+
+function histRecalc(i) {
+  const base = parseFloat(document.getElementById('hf-base-' + i).value) || 0;
+  const he   = parseFloat(document.getElementById('hf-he-'   + i).value) || 0;
+  const alim = parseFloat(document.getElementById('hf-alim-' + i).value) || 0;
+  const ss   = parseFloat(document.getElementById('hf-ss-'   + i).value) || 0;
+  const irs  = parseFloat(document.getElementById('hf-irs-'  + i).value) || 0;
+  const liq  = base + he + alim - ss - irs;
+  const liqEl = document.getElementById('hf-liq-' + i);
+  if (base > 0 || he > 0) {
+    liqEl.value = liq.toFixed(2);
+    histData[i].liquido = liq;
+    document.getElementById('hcard-liq-' + i).textContent = fmtShort(liq);
+    document.getElementById('hcard-liq-' + i).classList.remove('empty');
+  }
+  updateHistChart();
+}
+
+function histManualLiq(i) {
+  const liq = parseFloat(document.getElementById('hf-liq-' + i).value) || 0;
+  histData[i].liquido = liq;
+  document.getElementById('hcard-liq-' + i).textContent = fmtShort(liq);
+  document.getElementById('hcard-liq-' + i).classList.remove('empty');
+  updateHistChart();
+}
+
+function histFillFromCalc(i) {
+  // Pull current calc values
+  const base  = parseFloat(document.getElementById('salario').value) || 0;
+  const he50v = parseFloat(document.getElementById('he50').value)  || 0;
+  const he75v = parseFloat(document.getElementById('he75').value)  || 0;
+  const he100v= parseFloat(document.getElementById('he100').value) || 0;
+  const he150v= parseFloat(document.getElementById('he150').value) || 0;
+  const sub   = parseFloat(document.getElementById('subsal').value) || 0;
+  const dias  = parseFloat(document.getElementById('dias').value)  || 22;
+  const deps  = parseInt(document.getElementById('deps').value)    || 0;
+
+  const horaBase = base / (22*8);
+  const heTotal  = horaBase*(1.5*he50v + 1.75*he75v + 2.0*he100v + 2.5*he150v);
+  const alimTotal= sub * dias;
+  const ss       = (base + heTotal) * 0.11;
+  const irsBase  = calcIRS(base, deps);
+  const taxaEf   = base > 0 ? irsBase / base : 0;
+  const irsHE    = heTotal * taxaEf * 0.5;
+  const irs      = irsBase + irsHE;
+  const liq      = base + heTotal + alimTotal - ss - irs;
+
+  document.getElementById('hf-base-' + i).value = base.toFixed(2);
+  document.getElementById('hf-he-'   + i).value = heTotal.toFixed(2);
+  document.getElementById('hf-alim-' + i).value = alimTotal.toFixed(2);
+  document.getElementById('hf-ss-'   + i).value = ss.toFixed(2);
+  document.getElementById('hf-irs-'  + i).value = irs.toFixed(2);
+  document.getElementById('hf-liq-'  + i).value = liq.toFixed(2);
+
+  histData[i] = { base, he: heTotal, alim: alimTotal, ss, irs, liquido: liq, saved: false };
+  document.getElementById('hcard-liq-' + i).textContent = fmtShort(liq);
+  document.getElementById('hcard-liq-' + i).classList.remove('empty');
+  updateHistChart();
+}
+
+function histSaveMonth(i) {
+  const base = parseFloat(document.getElementById('hf-base-' + i).value) || 0;
+  const he   = parseFloat(document.getElementById('hf-he-'   + i).value) || 0;
+  const alim = parseFloat(document.getElementById('hf-alim-' + i).value) || 0;
+  const ss   = parseFloat(document.getElementById('hf-ss-'   + i).value) || 0;
+  const irs  = parseFloat(document.getElementById('hf-irs-'  + i).value) || 0;
+  const liq  = parseFloat(document.getElementById('hf-liq-'  + i).value) || 0;
+  histData[i] = { base, he, alim, ss, irs, liquido: liq, saved: true };
+  histSave(histData);
+  const card = document.getElementById('hcard-' + i);
+  card.classList.add('has-data');
+  document.getElementById('hcard-liq-' + i).textContent = fmtShort(liq);
+  document.getElementById('hcard-liq-' + i).classList.remove('empty');
+  // Flash feedback
+  const btn = card.querySelector('.hist-save-btn');
+  btn.textContent = '✅ Guardado!';
+  setTimeout(() => btn.textContent = '💾 Guardar ' + HIST_MESES[i], 1500);
+  updateHistChart();
+}
+
+function updateHistChart() {
+  const chart = document.getElementById('hist-bar-chart');
+  const vals  = histData.map(d => d.liquido || 0);
+  const max   = Math.max(...vals, 1);
+  const filled = vals.filter(v => v > 0).length;
+  const total  = vals.reduce((a,b) => a+b, 0);
+  const media  = filled > 0 ? total / filled : 0;
+
+  chart.innerHTML = '';
+  vals.forEach((v, i) => {
+    const heightPct = (v / max) * 100;
+    const isCurrentMonth = (i === new Date().getMonth());
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    col.innerHTML = `
+      <div class="bar-val">${v > 0 ? (v/1000).toFixed(1)+'k' : ''}</div>
+      <div class="bar-fill${isCurrentMonth ? ' current' : ''}" style="height:${heightPct}%"></div>
+      <div class="bar-label">${HIST_SHORT[i].substring(0,1)}</div>
+    `;
+    chart.appendChild(col);
+  });
+
+  document.getElementById('hist-media').textContent      = media > 0 ? fmtShort(media) : '—';
+  document.getElementById('hist-total').textContent      = total > 0 ? fmtShort(total) : '—';
+  document.getElementById('hist-meses-reg').textContent  = filled;
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 buildMonthGrid();
 buildIRSTable();
+buildHistMonths();
 calc();
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('SW registered'))
-      .catch(err => console.log('SW error', err));
-  });
-}
 </script>
 </body>
 </html>
