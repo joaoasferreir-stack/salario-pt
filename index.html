@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Calculadora Salarial 2026</title>
+<meta name="theme-color" content="#0f1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Salário PT">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --accent: #4f8ef7;
+    --accent2: #34d89b;
+    --accent3: #f7c34f;
+    --danger: #f75f5f;
+    --text: #e8eaf2;
+    --text2: #8b90a8;
+    --text3: #555c7a;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1a2540 0%, #0f1117 100%);
+    padding: 28px 20px 24px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+  .header-inner { max-width: 480px; margin: 0 auto; }
+  .header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .header h1 span { color: var(--accent); }
+  .header p {
+    font-size: 0.72rem;
+    color: var(--text3);
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    padding: 16px 16px 0;
+    max-width: 480px;
+    margin: 0 auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Section cards ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 0.85rem; font-weight: 600; flex: 1; }
+  .section-chevron { color: var(--text3); font-size: 0.75rem; transition: transform 0.2s; }
+  .section-chevron.open { transform: rotate(180deg); }
+  .section-body { padding: 16px 18px; }
+  .section-body.hidden { display: none; }
+
+  /* ── Field ── */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .field-row { display: flex; gap: 8px; align-items: center; }
+  .input-wrap { position: relative; flex: 1; }
+  .input-wrap .unit {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+  }
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 12px 38px 12px 14px;
+    outline: none;
+    -moz-appearance: textfield;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+  }
+
+  /* stepper buttons */
+  .stepper { display: flex; gap: 4px; }
+  .step-btn {
+    width: 38px; height: 42px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .step-btn:active { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.94); }
+
+  /* slider */
+  .slider-wrap { margin-top: 6px; }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(79,142,247,0.4);
+  }
+  .slider-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+  .slider-labels span { font-size: 0.65rem; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+  /* hora extra rows */
+  .he-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .he-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .he-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    width: 48px;
+    text-align: center;
+  }
+  .badge-50  { background: rgba(52,216,155,0.15); color: var(--accent2); }
+  .badge-75  { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .badge-100 { background: rgba(247,195,79,0.15); color: var(--accent3); }
+  .badge-150 { background: rgba(247,95,95,0.15);  color: var(--danger); }
+  .he-label { flex: 1; font-size: 0.78rem; color: var(--text2); line-height: 1.3; }
+  .he-input-wrap { position: relative; width: 80px; flex-shrink: 0; }
+  .he-input-wrap .unit { right: 8px; font-size: 0.7rem; }
+  .he-input-wrap input { padding: 10px 28px 10px 10px; font-size: 0.9rem; }
+  .he-valor { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text2); width: 68px; text-align: right; flex-shrink: 0; }
+
+  /* banco de horas */
+  .bh-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bh-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .bh-label { flex: 1; font-size: 0.78rem; color: var(--text2); }
+  .bh-input-wrap { position: relative; width: 80px; flex-shrink: 0; }
+  .bh-input-wrap .unit { right: 8px; font-size: 0.7rem; }
+  .bh-input-wrap input { padding: 10px 26px 10px 10px; font-size: 0.9rem; }
+  .bh-valor { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--accent3); width: 68px; text-align: right; flex-shrink: 0; }
+
+  /* ── Resultado ── */
+  .result-card {
+    background: linear-gradient(135deg, #1a2e4a 0%, #162340 100%);
+    border: 1px solid rgba(79,142,247,0.25);
+    border-radius: var(--radius);
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .result-main {
+    padding: 24px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(79,142,247,0.15);
+  }
+  .result-label { font-size: 0.72rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .result-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 2.4rem;
+    font-weight: 500;
+    color: var(--accent2);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .result-value .cents { font-size: 1.4rem; color: rgba(52,216,155,0.6); }
+  .result-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: var(--text3);
+    background: rgba(255,255,255,0.05);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .result-breakdown { padding: 16px 20px; }
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.82rem;
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-label { color: var(--text2); }
+  .breakdown-val { font-family: 'DM Mono', monospace; font-weight: 500; }
+  .val-positive { color: var(--text); }
+  .val-negative { color: var(--danger); }
+  .val-neutral  { color: var(--accent3); }
+  .breakdown-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* gauge */
+  .gauge-wrap { padding: 16px 20px; border-top: 1px solid rgba(79,142,247,0.15); }
+  .gauge-label { display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 8px; }
+  .gauge-label span:first-child { color: var(--text2); }
+  .gauge-label span:last-child { font-family: 'DM Mono', monospace; color: var(--accent); }
+  .gauge-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* banco saldo card */
+  .bh-saldo-card {
+    background: var(--surface2);
+    border: 1px solid rgba(247,195,79,0.2);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bh-saldo-label { font-size: 0.78rem; color: var(--text2); }
+  .bh-saldo-val { font-family: 'DM Mono', monospace; font-size: 1.1rem; color: var(--accent3); font-weight: 500; }
+
+  /* ── Info badges ── */
+  .info-note {
+    font-size: 0.72rem;
+    color: var(--text3);
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Banco de Horas Tab ── */
+  .month-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .month-card {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    transition: border-color 0.2s;
+  }
+  .month-card.has-hours { border-color: rgba(247,195,79,0.35); }
+  .month-name { font-size: 0.7rem; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .month-input-row { display: flex; gap: 4px; align-items: center; }
+  .month-input-wrap { position: relative; flex: 1; }
+  .month-input-wrap input { padding: 8px 24px 8px 8px; font-size: 0.85rem; }
+  .month-input-wrap .unit { right: 6px; font-size: 0.65rem; }
+  .month-comp-wrap { position: relative; flex: 1; }
+  .month-comp-wrap input { padding: 8px 24px 8px 8px; font-size: 0.85rem; border-color: rgba(247,95,95,0.3); }
+  .month-comp-wrap input:focus { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(247,95,95,0.1); }
+  .month-comp-wrap .unit { right: 6px; font-size: 0.65rem; color: var(--danger); }
+  .month-saldo { font-family: 'DM Mono', monospace; font-size: 0.72rem; margin-top: 4px; }
+
+  /* totals bar */
+  .totals-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 14px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .total-item { text-align: center; }
+  .total-item-label { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .total-item-val { font-family: 'DM Mono', monospace; font-size: 0.95rem; font-weight: 500; }
+
+  /* floating calc button (mobile) */
+  .calc-fab {
+    position: fixed;
+    bottom: 24px; right: 20px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #2563eb);
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(79,142,247,0.45);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+  }
+  .calc-fab:active { transform: scale(0.92); }
+
+  @media (min-width: 480px) { .calc-fab { display: none; } }
+
+  /* animations */
+  @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+  .section { animation: fadeUp 0.3s ease both; }
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.10s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>Salário <span>Líquido</span> 2026</h1>
+    <p>IRS Tabela I · Casado 2 Titulares · Portal das Finanças</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('calc')">💶 Calculadora</button>
+  <button class="tab" onclick="switchTab('banco')">🕐 Banco de Horas</button>
+  <button class="tab" onclick="switchTab('tabela')">📊 Tabela IRS</button>
+</div>
+
+<!-- ══ TAB: CALCULADORA ══ -->
+<div class="tab-panel active" id="tab-calc">
+<div class="container">
+
+  <!-- DADOS BASE -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon" style="background:rgba(79,142,247,0.15);">💼</div>
+      <span class="section-title">Dados Base</span>
+      <span class="section-chevron open">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Salário Base Bruto</label>
+        <div class="field-row">
+          <div class="input-wrap">
+            <input type="number" id="salario" value="2000" min="920" step="50" oninput="calc()">
+            <span class="unit">€</span>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('salario',-50)">−</button>
+            <button class="step-btn" onclick="step('salario',50)">+</button>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="salario_range" min="920" max="5000" step="50" value="2000" oninput="syncRange('salario','salario_range')">
+          <div class="slider-labels"><span>920 €</span><span>5.000 €</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Subsídio de Alimentação (€/dia útil)</label>
+        <div class="field-row">
+          <div class="input-wrap">
+            <input type="number" id="subsal" value="6.00" min="0" step="0.10" oninput="calc()">
+            <span class="unit">€</span>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('subsal',-0.10)">−</button>
+            <button class="step-btn" onclick="step('subsal',0.10)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Dias Úteis Trabalhados</label>
+        <div class="field-row">
+          <div class="input-wrap">
+            <input type="number" id="dias" value="22" min="1" max="23" step="1" oninput="calc()">
+            <span class="unit">dias</span>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('dias',-1)">−</button>
+            <button class="step-btn" onclick="step('dias',1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Nº de Dependentes</label>
+        <div class="field-row">
+          <div class="input-wrap">
+            <input type="number" id="deps" value="2" min="0" max="10" step="1" oninput="calc()">
+            <span class="unit">filho(s)</span>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('deps',-1)">−</button>
+            <button class="step-btn" onclick="step('deps',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORAS EXTRA -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon" style="background:rgba(52,216,155,0.15);">⏱️</div>
+      <span class="section-title">Horas Extra</span>
+      <span class="section-chevron open">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="he-row">
+        <span class="he-badge badge-50">+50%</span>
+        <span class="he-label">1ª hora dia útil</span>
+        <div class="he-input-wrap">
+          <input type="number" id="he50" value="0" min="0" step="0.5" oninput="calc()">
+          <span class="unit">h</span>
+        </div>
+        <span class="he-valor" id="he50_val">0,00 €</span>
+      </div>
+      <div class="he-row">
+        <span class="he-badge badge-75">+75%</span>
+        <span class="he-label">2ª hora+ dia útil</span>
+        <div class="he-input-wrap">
+          <input type="number" id="he75" value="0" min="0" step="0.5" oninput="calc()">
+          <span class="unit">h</span>
+        </div>
+        <span class="he-valor" id="he75_val">0,00 €</span>
+      </div>
+      <div class="he-row">
+        <span class="he-badge badge-100">+100%</span>
+        <span class="he-label">Descanso semanal</span>
+        <div class="he-input-wrap">
+          <input type="number" id="he100" value="0" min="0" step="0.5" oninput="calc()">
+          <span class="unit">h</span>
+        </div>
+        <span class="he-valor" id="he100_val">0,00 €</span>
+      </div>
+      <div class="he-row">
+        <span class="he-badge badge-150">+150%</span>
+        <span class="he-label">Feriado / descanso obrigatório</span>
+        <div class="he-input-wrap">
+          <input type="number" id="he150" value="0" min="0" step="0.5" oninput="calc()">
+          <span class="unit">h</span>
+        </div>
+        <span class="he-valor" id="he150_val">0,00 €</span>
+      </div>
+      <div class="info-note">Valor hora normal = Salário base ÷ (22 dias × 8h). Acréscimo conforme art.268º CT.</div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="result-card" id="result-card">
+    <div class="result-main">
+      <div class="result-label">Salário Líquido a Receber</div>
+      <div class="result-value" id="liquido_display">0<span class="cents">,00 €</span></div>
+      <div class="result-tag" id="taxa_tag">Taxa efectiva: 0%</div>
+    </div>
+    <div class="result-breakdown">
+      <div class="breakdown-row">
+        <span class="breakdown-label">Salário base bruto</span>
+        <span class="breakdown-val val-positive" id="r_base">0,00 €</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Total horas extra</span>
+        <span class="breakdown-val val-positive" id="r_he">0,00 €</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Subsídio de alimentação</span>
+        <span class="breakdown-val val-positive" id="r_subsal">0,00 €</span>
+      </div>
+      <div class="breakdown-divider"></div>
+      <div class="breakdown-row">
+        <span class="breakdown-label" style="font-weight:600;color:var(--text)">Bruto total</span>
+        <span class="breakdown-val val-positive" style="font-weight:600" id="r_bruto">0,00 €</span>
+      </div>
+      <div class="breakdown-divider"></div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Seg. Social (11%)</span>
+        <span class="breakdown-val val-negative" id="r_ss">− 0,00 €</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">IRS retido (Tabela I 2026)</span>
+        <span class="breakdown-val val-negative" id="r_irs">− 0,00 €</span>
+      </div>
+      <div class="breakdown-divider"></div>
+      <div class="breakdown-row">
+        <span class="breakdown-label" style="font-weight:600;color:var(--text)">Total descontos</span>
+        <span class="breakdown-val val-negative" style="font-weight:600" id="r_descontos">− 0,00 €</span>
+      </div>
+    </div>
+    <div class="gauge-wrap">
+      <div class="gauge-label">
+        <span>Líquido vs. Bruto</span>
+        <span id="gauge_pct">0%</span>
+      </div>
+      <div class="gauge-bar"><div class="gauge-fill" id="gauge_fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+</div><!-- /tab-calc -->
+
+<!-- ══ TAB: BANCO DE HORAS ══ -->
+<div class="tab-panel" id="tab-banco">
+<div class="container">
+  <div class="section" style="animation:none">
+    <div class="section-header" style="cursor:default">
+      <div class="section-icon" style="background:rgba(247,195,79,0.15);">🕐</div>
+      <span class="section-title">Registo Anual de Banco de Horas</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:0.75rem;color:var(--text3);margin-bottom:14px;line-height:1.5;">
+        Coluna <span style="color:var(--accent3)">+</span> = horas acumuladas &nbsp;|&nbsp;
+        Coluna <span style="color:var(--danger)">−</span> = horas compensadas<br>
+        Saldo acumula automaticamente. Limite legal: 200h/ano (art.226º CT).
+      </p>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+  </div>
+
+  <div class="totals-bar">
+    <div class="total-item">
+      <div class="total-item-label">Total Acumulado</div>
+      <div class="total-item-val" id="bh_total_acum" style="color:var(--accent3)">0,0 h</div>
+    </div>
+    <div class="total-item">
+      <div class="total-item-label">Total Compensado</div>
+      <div class="total-item-val" id="bh_total_comp" style="color:var(--danger)">0,0 h</div>
+    </div>
+    <div class="total-item">
+      <div class="total-item-label">Saldo Atual</div>
+      <div class="total-item-val" id="bh_saldo_final" style="color:var(--accent2)">0,0 h</div>
+    </div>
+  </div>
+
+  <div class="info-note" style="margin-top:14px">
+    ⚠️ Limite máximo de 200h/ano ou 150h em qualquer momento. Acima do limite, as horas devem ser pagas como trabalho suplementar (art.226º CT).
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB: TABELA IRS ══ -->
+<div class="tab-panel" id="tab-tabela">
+<div class="container">
+  <div class="section" style="animation:none">
+    <div class="section-header" style="cursor:default">
+      <div class="section-icon" style="background:rgba(247,195,79,0.15);">📊</div>
+      <span class="section-title">Tabela I — IRS 2026</span>
+    </div>
+    <div class="section-body" style="padding:0">
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:0.72rem;">
+          <thead>
+            <tr style="background:var(--surface2)">
+              <th style="padding:10px 10px;text-align:left;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border)">Remuneração</th>
+              <th style="padding:10px 6px;text-align:center;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border)">Taxa</th>
+              <th style="padding:10px 6px;text-align:center;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border)">Par./Dep.</th>
+              <th style="padding:10px 6px;text-align:center;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border)">Taxa Ef.</th>
+            </tr>
+          </thead>
+          <tbody id="irs-table-body"></tbody>
+        </table>
+      </div>
+      <div class="info-note" style="margin:12px 16px 14px">
+        Fórmula: (Rem. × Taxa) − Parcela a Abater − (21,43 € × Nº Dependentes)<br>
+        Fonte: Despacho SEAF 233-A/2026, 6 jan. 2026 — Portal das Finanças
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<button class="calc-fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── IRS Tabela I 2026 (Despacho SEAF, Portal das Finanças) ──────────────────
+const IRS_TABLE = [
+  { max: 920,    rate: 0.0000, abate: (R) => 0,                                      ef: "0,0%" },
+  { max: 1042,   rate: 0.1250, abate: (R) => 0.1250*2.60*(1273.85 - R),              ef: "5,3%" },
+  { max: 1108,   rate: 0.1570, abate: (R) => 0.1570*1.35*(1554.83 - R),              ef: "7,2%" },
+  { max: 1154,   rate: 0.1570, abate: (_) => 94.71,                                  ef: "7,5%" },
+  { max: 1212,   rate: 0.2120, abate: (_) => 158.18,                                 ef: "8,1%" },
+  { max: 1819,   rate: 0.2410, abate: (_) => 193.33,                                 ef: "13,5%"},
+  { max: 2119,   rate: 0.3110, abate: (_) => 320.66,                                 ef: "16,0%"},
+  { max: 2499,   rate: 0.3490, abate: (_) => 401.19,                                 ef: "18,8%"},
+  { max: 3305,   rate: 0.3836, abate: (_) => 487.66,                                 ef: "23,6%"},
+  { max: 5547,   rate: 0.3969, abate: (_) => 531.62,                                 ef: "30,1%"},
+  { max: 20221,  rate: 0.4495, abate: (_) => 823.40,                                 ef: "40,9%"},
+  { max: Infinity,rate:0.4717, abate: (_) => 1272.31,                                ef: "n.a." },
+];
+
+const IRS_TABLE_DISPLAY = [
+  ["Até 920 €",          "0,00%",  "0,00",                          "21,43 €", "0,0%"],
+  ["Até 1.042 €",        "12,50%", "12,5%×2,6×(1.273,85−R)",       "21,43 €", "5,3%"],
+  ["Até 1.108 €",        "15,70%", "15,7%×1,35×(1.554,83−R)",      "21,43 €", "7,2%"],
+  ["Até 1.154 €",        "15,70%", "94,71",                         "21,43 €", "7,5%"],
+  ["Até 1.212 €",        "21,20%", "158,18",                        "21,43 €", "8,1%"],
+  ["Até 1.819 €",        "24,10%", "193,33",                        "21,43 €", "13,5%"],
+  ["Até 2.119 €",        "31,10%", "320,66",                        "21,43 €", "16,0%"],
+  ["Até 2.499 €",        "34,90%", "401,19",                        "21,43 €", "18,8%"],
+  ["Até 3.305 €",        "38,36%", "487,66",                        "21,43 €", "23,6%"],
+  ["Até 5.547 €",        "39,69%", "531,62",                        "21,43 €", "30,1%"],
+  ["Até 20.221 €",       "44,95%", "823,40",                        "21,43 €", "40,9%"],
+  ["> 20.221 €",         "47,17%", "1.272,31",                      "21,43 €", "n.a."],
+];
+
+function calcIRS(rendTributavel, numDeps) {
+  for (const row of IRS_TABLE) {
+    if (rendTributavel <= row.max) {
+      const raw = rendTributavel * row.rate - row.abate(rendTributavel) - 21.43 * numDeps;
+      return Math.max(0, raw);
+    }
+  }
+  return 0;
+}
+
+function fmt(val) {
+  return val.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+function fmtN(val) {
+  return val.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ── Main calc ────────────────────────────────────────────────────────────────
+function calc() {
+  const salario = parseFloat(document.getElementById('salario').value) || 0;
+  const subsal  = parseFloat(document.getElementById('subsal').value)  || 0;
+  const dias    = parseFloat(document.getElementById('dias').value)    || 22;
+  const deps    = parseInt(document.getElementById('deps').value)      || 0;
+
+  const horaBase = salario / (22 * 8);
+  const he50  = parseFloat(document.getElementById('he50').value)  || 0;
+  const he75  = parseFloat(document.getElementById('he75').value)  || 0;
+  const he100 = parseFloat(document.getElementById('he100').value) || 0;
+  const he150 = parseFloat(document.getElementById('he150').value) || 0;
+
+  const v50  = horaBase * 1.50 * he50;
+  const v75  = horaBase * 1.75 * he75;
+  const v100 = horaBase * 2.00 * he100;
+  const v150 = horaBase * 2.50 * he150;
+  const totalHE = v50 + v75 + v100 + v150;
+
+  document.getElementById('he50_val').textContent  = fmt(v50);
+  document.getElementById('he75_val').textContent  = fmt(v75);
+  document.getElementById('he100_val').textContent = fmt(v100);
+  document.getElementById('he150_val').textContent = fmt(v150);
+
+  const subTot = subsal * dias;
+  const bruto  = salario + totalHE + subTot;
+
+  // SS incide sobre base + HE (sub. alim. isento)
+  const ss = (salario + totalHE) * 0.11;
+
+  // IRS base: calculado apenas sobre salário base (retenção autónoma separada, art.99-C nº8 CIRS)
+  const irsBase = calcIRS(salario, deps);
+
+  // IRS horas extra: 50% da taxa efetiva mensal do salário base (art.99-C nº10, OE2025 mantido 2026)
+  const taxaEfBase = salario > 0 ? irsBase / salario : 0;
+  const irsHE = totalHE * (taxaEfBase * 0.50);
+
+  const irs = irsBase + irsHE;
+  const totalDesc = ss + irs;
+  const liquido = bruto - totalDesc;
+
+  // Display
+  const liqStr = fmtN(liquido);
+  const dotIdx = liqStr.lastIndexOf(',');
+  const intPart = liqStr.substring(0, dotIdx);
+  const decPart = liqStr.substring(dotIdx);
+  document.getElementById('liquido_display').innerHTML = intPart + '<span class="cents">' + decPart + ' €</span>';
+
+  const taxaEf = (salario + totalHE) > 0 ? (totalDesc / (salario + totalHE)) * 100 : 0;
+  const taxaHEpct = (taxaEfBase * 0.50 * 100).toFixed(1);
+  document.getElementById('taxa_tag').textContent = 'Taxa efectiva: ' + taxaEf.toFixed(1) + '% | IRS h.extra: ' + taxaHEpct + '%';
+
+  document.getElementById('r_base').textContent     = fmt(salario);
+  document.getElementById('r_he').textContent       = fmt(totalHE);
+  document.getElementById('r_subsal').textContent   = fmt(subTot);
+  document.getElementById('r_bruto').textContent    = fmt(bruto);
+  document.getElementById('r_ss').textContent       = '− ' + fmt(ss);
+  document.getElementById('r_irs').textContent      = '− ' + fmt(irs) + (totalHE > 0 ? '  (base ' + fmt(irsBase) + ' + HE ' + fmt(irsHE) + ')' : '');
+  document.getElementById('r_descontos').textContent= '− ' + fmt(totalDesc);
+
+  const pct = bruto > 0 ? (liquido / bruto * 100) : 0;
+  document.getElementById('gauge_fill').style.width = Math.min(100, pct) + '%';
+  document.getElementById('gauge_pct').textContent = pct.toFixed(1) + '%';
+
+  // sync range
+  document.getElementById('salario_range').value = salario;
+}
+
+function step(id, delta) {
+  const el = document.getElementById(id);
+  const v = parseFloat(el.value) || 0;
+  el.value = Math.max(parseFloat(el.min)||0, Math.round((v + delta) * 100) / 100);
+  calc();
+}
+
+function syncRange(inputId, rangeId) {
+  document.getElementById(inputId).value = document.getElementById(rangeId).value;
+  calc();
+}
+
+// ── Sections toggle ──────────────────────────────────────────────────────────
+function toggleSection(hdr) {
+  const body = hdr.nextElementSibling;
+  const chev = hdr.querySelector('.section-chevron');
+  body.classList.toggle('hidden');
+  chev.classList.toggle('open');
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── Banco de Horas ────────────────────────────────────────────────────────────
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+               'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function buildMonthGrid() {
+  const grid = document.getElementById('month-grid');
+  grid.innerHTML = '';
+  MESES.forEach((mes, i) => {
+    const card = document.createElement('div');
+    card.className = 'month-card';
+    card.id = 'bh-card-' + i;
+    card.innerHTML = `
+      <div class="month-name">${mes}</div>
+      <div class="month-input-row">
+        <div class="month-input-wrap">
+          <input type="number" id="bh_in_${i}" value="0" min="0" step="0.5"
+                 placeholder="0" oninput="calcBanco()" title="Horas acumuladas">
+          <span class="unit" style="color:var(--accent3)">+h</span>
+        </div>
+        <div class="month-comp-wrap">
+          <input type="number" id="bh_out_${i}" value="0" min="0" step="0.5"
+                 placeholder="0" oninput="calcBanco()" title="Horas compensadas">
+          <span class="unit" style="color:var(--danger)">−h</span>
+        </div>
+      </div>
+      <div class="month-saldo" id="bh_saldo_${i}" style="color:var(--text3)">saldo: 0,0 h</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function calcBanco() {
+  let saldo = 0, totalIn = 0, totalOut = 0;
+  MESES.forEach((_, i) => {
+    const inp = parseFloat(document.getElementById('bh_in_' + i).value)  || 0;
+    const out = parseFloat(document.getElementById('bh_out_' + i).value) || 0;
+    totalIn  += inp;
+    totalOut += out;
+    saldo    += inp - out;
+    const saldoEl = document.getElementById('bh_saldo_' + i);
+    saldoEl.textContent = 'saldo: ' + saldo.toFixed(1) + ' h';
+    saldoEl.style.color = saldo > 0 ? 'var(--accent3)' : saldo < 0 ? 'var(--danger)' : 'var(--text3)';
+    const card = document.getElementById('bh-card-' + i);
+    card.classList.toggle('has-hours', inp > 0);
+  });
+  document.getElementById('bh_total_acum').textContent  = totalIn.toFixed(1)  + ' h';
+  document.getElementById('bh_total_comp').textContent  = totalOut.toFixed(1) + ' h';
+  const sf = document.getElementById('bh_saldo_final');
+  sf.textContent = saldo.toFixed(1) + ' h';
+  sf.style.color = saldo >= 150 ? 'var(--danger)' : saldo > 0 ? 'var(--accent2)' : 'var(--text3)';
+}
+
+// ── IRS Table display ─────────────────────────────────────────────────────────
+function buildIRSTable() {
+  const tbody = document.getElementById('irs-table-body');
+  IRS_TABLE_DISPLAY.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.style.background = i % 2 === 0 ? 'var(--surface2)' : 'transparent';
+    tr.innerHTML = `
+      <td style="padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text)">${row[0]}</td>
+      <td style="padding:8px 6px;text-align:center;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;color:var(--accent)">${row[1]}</td>
+      <td style="padding:8px 6px;text-align:center;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;color:var(--text2);font-size:0.65rem">${row[3]}</td>
+      <td style="padding:8px 6px;text-align:center;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;color:var(--text3)">${row[4]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildMonthGrid();
+buildIRSTable();
+calc();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registered'))
+      .catch(err => console.log('SW error', err));
+  });
+}
+</script>
+</body>
+</html>

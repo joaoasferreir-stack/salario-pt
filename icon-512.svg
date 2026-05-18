@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#1a2540"/>
+  <rect x="40" y="40" width="432" height="432" rx="80" fill="#1F3864"/>
+  <text x="256" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="140" fill="#4f8ef7">€</text>
+  <text x="256" y="340" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="60" fill="#34d89b">PT</text>
+  <text x="256" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" fill="#8b90a8">2026</text>
+</svg>
